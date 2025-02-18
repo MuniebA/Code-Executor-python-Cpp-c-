@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject ICodeExecutionService CodeExecutionService
+
+<div class="code-editor">
+    <div class="language-selector mb-3">
+        <select @bind="SelectedLanguage" class="form-select">
+            <option value="python">Python</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+        </select>
+    </div>
+
+    <div class="editor-container">
+        <textarea @bind="Code"
+                  @bind:event="oninput"
+                  class="form-control code-area"
+                  rows="15"
+                  placeholder="Enter your code here...">@GetDefaultCode()</textarea>
+    </div>
+
+    <div class="mt-3">
+        <textarea @bind="Inputs"
+                  @bind:event="oninput"
+                  class="form-control input-area"
+                  rows="5"
+                  placeholder="Enter inputs (one per line)"></textarea>
+    </div>
+
+    <div class="button-container mt-3">
+        <button class="btn btn-primary"
+                @onclick="ExecuteCode"
+                disabled="@IsExecuting">
+            @if (IsExecuting)
+            {
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                <span>Executing...</span>
+            }
+            else
+            {
+                <span>Execute Code</span>
+            }
+        </button>
+    </div>
+
+    @if (Result != null)
+    {
+        <div class="output-container mt-3">
+            <h5>Output:</h5>
+            <pre class="@(Result.Success ? "text-success" : "text-danger")">@(Result.Success ? Result.Output : Result.Error)</pre>
+        </div>
+    }
+</div>
+
+@code {
+    private string SelectedLanguage { get; set; } = "python";
+    private string Code { get; set; } = "";
+    private string Inputs { get; set; } = string.Empty;
+    private CodeExecutionResult? Result { get; set; }
+    private bool IsExecuting { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Code = GetDefaultCode();
+    }
+
+    private string GetDefaultCode()
+    {
+        return SelectedLanguage switch
+        {
+            "python" => "# Example:\nname = input('Enter your name: ')\nprint(f'Hello {name}!')",
+            "c" => "#include <stdio.h>\n\nint main() {\n    char name[100];\n    printf(\"Enter your name: \");\n    scanf(\"%s\", name);\n    printf(\"Hello %s!\\n\", name);\n    return 0;\n}",
+            "cpp" => "#include <iostream>\n#include <string>\n\nint main() {\n    std::string name;\n    std::cout << \"Enter your name: \";\n    std::cin >> name;\n    std::cout << \"Hello \" << name << \"!\\n\";\n    return 0;\n}",
+            _ => ""
+        };
+    }
+
+    private async Task ExecuteCode()
+    {
+        if (IsExecuting) return;
+
+        try
+        {
+            IsExecuting = true;
+            StateHasChanged();
+
+            Result = await CodeExecutionService.ExecuteCodeAsync(new CodeExecutionRequest
+                {
+                    Code = Code,
+                    Inputs = Inputs.Replace("\r\n", "\n"),
+                    Language = SelectedLanguage
+                });
+        }
+        catch (Exception ex)
+        {
+            Result = new CodeExecutionResult
+                {
+                    Success = false,
+                    Error = $"Error executing code: {ex.Message}"
+                };
+        }
+        finally
+        {
+            IsExecuting = false;
+            StateHasChanged();
+        }
+    }
+}
+
+<style>
+    .code-area {
+        font-family: Consolas, monospace;
+        min-height: 300px;
+        resize: vertical;
+        background-color: #f8f9fa;
+        white-space: pre;
+        tab-size: 4;
+    }
+
+    .input-area {
+        font-family: Consolas, monospace;
+        resize: vertical;
+        background-color: #f8f9fa;
+    }
+
+    .output-container pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        white-space: pre-wrap;
+        font-family: Consolas, monospace;
+    }
+
+    .language-selector {
+        width: 200px;
+    }
+</style>
