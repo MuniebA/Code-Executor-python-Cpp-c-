@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PythonExecutor.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47103d30c3b6f06192fc9e2d2f40cf2cb446ed16")]
 [assembly: System.Reflection.AssemblyProductAttribute("PythonExecutor.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PythonExecutor.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
