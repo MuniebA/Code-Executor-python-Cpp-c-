@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "RCeNVYtF63lSpO0tflIlK0ZqXRAhqUpTFBAVXWXDbOQ=",
+  "Source": "PythonExecutor.Api",
+  "BasePath": "_content/PythonExecutor.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
